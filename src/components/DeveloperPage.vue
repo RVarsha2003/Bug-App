@@ -1,4 +1,3 @@
-developer page at 7 am
 <template>
   <div ref="vanta" class="DeveloperPage">
     <div class="container">
@@ -199,6 +198,113 @@ export default {
 };
 </script>
 
+<style scoped>
+.DeveloperPage {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.container {
+  background-color: rgba(255, 255, 255, 0.9);
+  padding: 20px;
+  margin: auto;
+  max-width: 800px;
+  border-radius: 8px;
+  box-shadow: 0 0px 25px rgba(251, 255, 0, 0.989);
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 90%;
+  box-sizing: border-box;
+}
+
+form {
+  margin-bottom: 20px;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th, td {
+  border: 1px solid #ddd;
+  padding: 8px;
+  text-align: left;
+}
+
+.status-completed {
+  color: green;
+  font-size: 1.5em;
+  font-weight: 1.3em;
+}
+
+.status-incomplete {
+  color: rgb(226, 0, 0);
+  font-size: 1.3em;
+  font-weight: 1.3em;
+}
+
+/* Mobile Responsive Styles */
+@media (max-width: 600px) {
+  .container {
+    padding: 10px !important;
+    max-width: 90% !important;
+    box-shadow: none !important;
+    top: 0 !important;
+    left: 0 !important;
+    transform: none !important;
+    width: 100% !important;
+    height: auto !important;
+    margin: 20px auto !important;
+  }
+
+  h2 {
+    font-size: 1.5em !important;
+    text-align: center !important;
+  }
+
+  form {
+    margin-bottom: 10px !important;
+  }
+
+  label {
+    display: block !important;
+    margin-bottom: 5px !important;
+  }
+
+  input {
+    width: 100% !important;
+    padding: 8px !important;
+    margin-bottom: 10px !important;
+    box-sizing: border-box !important;
+  }
+
+  button {
+    width: 100% !important;
+    padding: 10px !important;
+    margin-bottom: 10px !important;
+  }
+
+  table {
+    font-size: 0.8em !important;
+  }
+
+  th, td {
+    padding: 4px !important;
+  }
+
+  .status-completed, .status-incomplete {
+    font-size: 1.2em !important;
+  }
+}
+</style>
+
+
+
 <!-- <style scoped>
 .DeveloperPage {
   position: relative;
@@ -249,7 +355,7 @@ th, td {
   font-weight: 1.3em;
 }
 </style> -->
-<style scoped>
+<!-- <style scoped>
 .DeveloperPage {
   position: relative;
   width: 100vw;
@@ -338,4 +444,5 @@ th, td {
     width: 100%;
   }
 }
-</style>
+</style> -->
+
