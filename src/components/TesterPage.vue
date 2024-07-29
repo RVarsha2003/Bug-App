@@ -27,6 +27,8 @@
           use-input
         />
         <q-btn type="submit" label="Submit" color="primary" />
+      <br /><br />
+        <q-btn @click.prevent="onSubmit2"color="primary" type="submit" class="box" label="Logout"  />
       </q-form>
     </div>
     <div class="table-container">
@@ -62,6 +64,10 @@ export default {
     };
   },
   methods: {
+    onSubmit2() {
+      this.$router.push({ name: 'StartPage' });
+    },
+
     addBug() {
       if (this.title && this.description && this.priority) {
         const bugStore = useBugStore();

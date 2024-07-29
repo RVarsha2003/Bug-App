@@ -17,7 +17,8 @@
         <br />
         <q-form @submit.prevent="onSubmit3">
           <q-btn type="submit" class="box" label="View Pending Task" color="primary" />
-        </q-form>
+        </q-form><br />
+        <q-btn @click.prevent="onSubmit8" type="submit" class="box" label="Logout" color="primary" />
       </div>
 
       <div v-if="showBugTable" class="overlay">
@@ -191,6 +192,11 @@ export default {
     }
   },
   methods: {
+    onSubmit8() {
+      this.$router.push({ name: 'StartPage' });
+    },
+
+
     onSubmit() {
       this.showBugTable = !this.showBugTable;
       if (this.showBugTable) {

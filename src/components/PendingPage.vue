@@ -16,7 +16,7 @@
           </tr>
         </thead>
         <tbody>
-          <tr v-for="(taskItem, index) in pendingTasksWithPredefined" :key="index">
+          <tr v-for="(taskItem, index) in pendingTasks" :key="index">
             <td>{{ taskItem.assignedTo }}</td>
             <td>{{ taskItem.title }}</td>
             <td>{{ taskItem.description }}</td>
@@ -26,7 +26,8 @@
             <td>{{ formatDate(taskItem.endDate) }}</td>
           </tr>
         </tbody>
-      </table>
+      </table> <br />
+      <q-btn @click.prevent="onSubmit9" type="submit" class="box" label="Back" /> 
     </div>
   </div>
 </template>
@@ -44,20 +45,24 @@ export default {
       const bugs = JSON.parse(localStorage.getItem('bugListData') || '[]');
       return bugs.filter(bug => bug.status === 'incomplete');
     },
-    pendingTasksWithPredefined() {
-      const predefinedTask = {
-        assignedTo: 'rosh',
-        title: 'bike',
-        description: 'bike',
-        priority: 'Low',
-        status: 'incomplete',
-        startDate: '07-27-2024',
-        endDate: '07-30-2024',
-      };
-      return [predefinedTask, ...this.pendingTasks];
-    }
+    // Commenting out the predefined task
+    // pendingTasksWithPredefined() {
+    //   const predefinedTask = {
+    //     assignedTo: 'rosh',
+    //     title: 'bikess',
+    //     description: 'bikess',
+    //     priority: 'Low',
+    //     status: 'incomplete',
+    //     startDate: '07-27-2024',
+    //     endDate: '07-30-2024',
+    //   };
+    //   return [predefinedTask, ...this.pendingTasks];
+    // }
   },
   methods: {
+    onSubmit9() {
+      this.$router.push({ name: 'AdminPage' });
+    },
     formatDate(dateString) {
       const date = new Date(dateString);
       const day = String(date.getDate()).padStart(2, '0');
@@ -256,4 +261,71 @@ tbody tr:hover {
   }
 }
 </style>
+
+
+<!-- <style scoped>
+.pending-page {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+}
+
+.vanta-box {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
+}
+
+.content-container {
+  position: relative;
+  z-index: 1;
+  background-color: rgba(255, 255, 255, 0.9);
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 0px 25px rgba(251, 255, 0, 0.989);
+  max-width: 1200px;
+  width: 100%;
+  overflow: auto;
+  align-items: center;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  border: 1px solid black;
+}
+
+th, td {
+  border-top: 1px solid #080303;
+  border-bottom: 1px solid #080303;
+  padding: 8px;
+  text-align: left;
+  border-left: none;
+  border-right: none;
+}
+
+th {
+  background-color: #f4f4f4;
+  font-weight: bold;
+}
+
+tbody tr:nth-child(even) {
+  background-color: #f9f9f9;
+}
+
+tbody tr:hover {
+  background-color: #f1f1f1;
+}
+
+.don {
+  align-items: center;
+}
+</style> -->
 

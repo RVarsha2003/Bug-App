@@ -10,11 +10,15 @@
             <datalist id="developerNames">
               <option v-for="developer in developerOptions" :key="developer.value" :value="developer.label" />
             </datalist>
-          </div>
-          <button type="submit">Login</button>
+          </div> <br />
+          <div>
+            <label for="password">Password:</label>
+            <input type="password" v-model.trim="password" id="password" required minlength="6" maxlength="6">
+          </div><br />
+          <button type="submit" style="margin-right: 20px;">Login</button>
+          <q-btn @click.prevent="onSubmit2" type="submit" class="box" label="Logout" />
         </form>
       </template>
-
       <template v-else>
         <div v-if="currentDeveloper">
           <h2>Task List for {{ currentDeveloper.name }}</h2>
@@ -29,6 +33,7 @@
                   <th>Status</th>
                   <th>Start Date</th>
                   <th>End Date</th>
+                  <th>Days</th> <!-- Updated column header -->
                 </tr>
               </thead>
               <tbody>
@@ -48,6 +53,13 @@
                   </td>
                   <td>{{ formatDate(task.startDate) }}</td>
                   <td>{{ formatDate(task.endDate) }}</td>
+                  <td> <!-- Updated column for the days block -->
+                    <div class="block-container">
+                      <div v-for="n in calculateDays(task.startDate, task.endDate)" :key="n" class="block" :style="getBlockStyle(n)">
+                        {{ n }}
+                      </div>
+                    </div>
+                  </td>
                 </tr>
               </tbody>
             </table><br/>
@@ -61,13 +73,18 @@
     </div>
   </div>
 </template>
-
 <script>
 import { ref, onMounted } from 'vue';
 
 export default {
+  methods: {
+    onSubmit2() {
+      this.$router.push({ name: 'StartPage' });
+    },
+  },
   setup() {
     const devname = ref('');
+    const password = ref(''); // New password field
     const showTasks = ref(false);
     const developerOptions = ref([
       { label: 'ABC', value: 'ABC' },
@@ -76,13 +93,47 @@ export default {
     const currentDeveloper = ref(null);
 
     const login = () => {
-      const trimmedName = devname.value.trim().toUpperCase();
-      const developer = developerOptions.value.find(dev => dev.label.toUpperCase() === trimmedName);
+      const trimmedName = devname.value.trim().toLowerCase();
+      if (trimmedName === 'rosh' && password.value !== '123456') {
+        alert('Invalid password for Rosh');
+        return;
+      }
+      if (password.value.length !== 6) {
+        alert('Password must be exactly 6 characters long.');
+        return;
+      }
+      if (trimmedName === 'rosh') {
+        handleRoshLogin();
+      } else {
+        handleOtherLogin(trimmedName.toUpperCase());
+      }
+    };
 
+    const handleRoshLogin = () => {
+      currentDeveloper.value = {
+        name: 'Rosh',
+        tasks: [
+          {
+            assignedTo: 'rosh',
+            title: 'mouse',
+            description: 'mouse',
+            priority: 'Low',
+            status: 'incomplete',
+            startDate: '07-27-2024',
+            endDate: '07-30-2024',
+          }
+        ]
+      };
+      console.log('Logged in successfully: Rosh');
+      showTasks.value = true;
+    };
+
+    const handleOtherLogin = (name) => {
+      const developer = developerOptions.value.find(dev => dev.label.toUpperCase() === name);
       if (developer) {
         currentDeveloper.value = getDeveloper(developer.label);
         if (currentDeveloper.value) {
-          console.log('Logged in successfully:', trimmedName);
+          console.log(`Logged in successfully: ${name}`);
           showTasks.value = true;
         } else {
           alert('No tasks assigned to this developer');
@@ -125,17 +176,19 @@ export default {
 
     const updateTasks = () => {
       const bugs = JSON.parse(localStorage.getItem('bugListData') || '[]');
-      const updatedTasks = currentDeveloper.value.tasks.map(task => {
+      currentDeveloper.value.tasks.forEach(task => {
         const bug = bugs.find(b => b.id === task.id);
         if (bug) {
           bug.status = task.status;
+        } else {
+          bugs.push(task);
         }
-        return bug;
       });
-      localStorage.setItem('bugListData', JSON.stringify(updatedTasks));
+      localStorage.setItem('bugListData', JSON.stringify(bugs));
       alert('Tasks updated successfully');
       showTasks.value = false;
       devname.value = '';
+      password.value = ''; // Reset password field
     };
 
     const getStatusClass = (status) => {
@@ -148,6 +201,38 @@ export default {
       const month = String(date.getMonth() + 1).padStart(2, '0');
       const year = date.getFullYear();
       return `${day}-${month}-${year}`;
+    };
+    const calculateDays = (startDate, endDate) => {
+  const start = new Date(startDate);
+  const end = new Date(endDate);
+  const timeDiff = end - start;
+  const daysDiff = Math.ceil(timeDiff / (1000 * 60 * 60 * 24)) + 1; // Added +1 to include the last day
+  return daysDiff;
+};
+
+    // const calculateDays = (startDate, endDate) => {
+    //   const start = new Date(startDate);
+    //   const end = new Date(endDate);
+    //   const timeDiff = end - start;
+    //   const daysDiff = Math.ceil(timeDiff / (1000 * 60 * 60 * 24));
+    //   return daysDiff;
+    // };
+
+    const getBlockStyle = (day) => {
+      const colors = [
+        '#FF5733', '#33FF57', '#3357FF', '#F333FF', '#FF33A6',
+        '#33FFF7', '#F7FF33', '#FF8C33', '#B833FF', '#33FF83', '#FF3380'
+      ];
+      return {
+        backgroundColor: colors[(day - 1) % colors.length],
+        color: 'black', // Changed to black
+        padding: '5px',
+        borderRadius: '4px',
+        margin: '2px', // Adjusted for horizontal spacing
+        width: '20px',
+        textAlign: 'center',
+        display: 'inline-block' // Ensure blocks are inline
+      };
     };
 
     onMounted(() => {
@@ -185,6 +270,7 @@ export default {
 
     return {
       devname,
+      password, // Include password in return
       showTasks,
       developerOptions,
       login,
@@ -192,7 +278,9 @@ export default {
       updateTasks,
       getStatusClass,
       currentDeveloper,
-      formatDate
+      formatDate,
+      calculateDays,
+      getBlockStyle
     };
   }
 };
@@ -248,6 +336,157 @@ th, td {
   font-weight: 1.3em;
 }
 
+.block-container {
+  display: flex;
+}
+
+.block {
+  background-color: #ff5733;
+  color: black;
+  padding: 5px;
+  border-radius: 4px;
+  margin: 2px;
+  width: 20px;
+  text-align: center;
+  display: inline-block;
+}
+
+/* Mobile Responsive Styles */
+@media (max-width: 600px) {
+  .container {
+    padding: 10px !important;
+    max-width: 100% !important;
+    box-shadow: none !important;
+    top: auto !important;
+    left: auto !important;
+    transform: none !important;
+    width: calc(100% - 40px) !important;
+    height: auto !important;
+    margin: 20px auto !important;
+    position: relative !important;
+  }
+
+  h2 {
+    font-size: 1.5em !important;
+    text-align: center !important;
+  }
+
+  form {
+    margin-bottom: 10px !important;
+  }
+
+  label {
+    display: block !important;
+    margin-bottom: 5px !important;
+  }
+
+  input {
+    width: 100% !important;
+    padding: 8px !important;
+    margin-bottom: 10px !important;
+    box-sizing: border-box !important;
+  }
+
+  button {
+    width: 100% !important;
+    padding: 10px !important;
+    margin-bottom: 10px !important;
+  }
+
+  table {
+    font-size: 0.8em !important;
+  }
+
+  th, td {
+    padding: 4px !important;
+  }
+
+  .status-completed, .status-incomplete {
+    font-size: 1.2em !important;
+  }
+}
+
+@media (max-width: 600px) {
+  .container {
+    box-shadow: 0 0px 25px rgba(251, 255, 0, 0.989)
+  !important;
+  }
+}
+</style>
+
+
+
+
+
+
+
+
+
+<!-- <style scoped>
+.DeveloperPage {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.container {
+  background-color: rgba(255, 255, 255, 0.9);
+  padding: 20px;
+  margin: auto;
+  max-width: 800px;
+  border-radius: 8px;
+  box-shadow: 0 0px 25px rgba(251, 255, 0, 0.989);
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 90%;
+  box-sizing: border-box;
+}
+
+form {
+  margin-bottom: 20px;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th, td {
+  border: 1px solid #ddd;
+  padding: 8px;
+  text-align: left;
+}
+
+.status-completed {
+  color: green;
+  font-size: 1.5em;
+  font-weight: 1.3em;
+}
+
+.status-incomplete {
+  color: rgb(226, 0, 0);
+  font-size: 1.3em;
+  font-weight: 1.3em;
+}
+
+.block-container {
+  display: flex; /* Ensures the blocks are displayed horizontally */
+}
+
+.block {
+  background-color: #ff5733;
+  color: black; /* Changed to black */
+  padding: 5px;
+  border-radius: 4px;
+  margin: 2px; /* Adjusted for horizontal spacing */
+  width: 20px;
+  text-align: center;
+  display: inline-block;
+}
+
 /* Mobile Responsive Styles */
 @media (max-width: 600px) {
   .container {
@@ -301,7 +540,19 @@ th, td {
     font-size: 1.2em !important;
   }
 }
-</style>
+</style> -->
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

@@ -108,7 +108,7 @@ export default {
   width: 300px;
   padding: 20px;
   background-color: rgba(255, 255, 255, 0.9);
-  box-shadow: 0 0px 25px rgba(251, 255, 0, 0.989);
+  box-shadow: 0 0px 25px rgba(193, 196, 13, 0.989);
   border-radius: 8px;
   text-align: center;
 }
